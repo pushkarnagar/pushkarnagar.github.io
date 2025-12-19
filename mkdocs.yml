@@ -1,0 +1,13 @@
+site_name: "ML Notes — pushkarnagar"
+site_url: https://pushkarnagar.github.io
+nav:
+  - Home: index.md
+theme:
+  name: material
+plugins:
+  - search
+  - jupyter
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/pushkarnagar/pushkarnagar.github.io
