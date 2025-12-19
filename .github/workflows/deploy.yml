@@ -1,5 +1,9 @@
 name: Deploy MkDocs site
 
+permissions:
+  contents: write
+  pages: write
+
 on:
   push:
     branches: [ main ]
