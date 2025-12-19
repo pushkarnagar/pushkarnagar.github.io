@@ -524,6 +524,86 @@
 
 
 
+<div class="highlight"><pre><span></span><code><span class="gh"># Linear Regression</span>
+
+Concise study notes on ordinary least squares linear regression.
+
+<span class="gu">## At a glance</span>
+
+<span class="k">-</span><span class="w"> </span>Model: linear mapping from features to target.
+<span class="k">-</span><span class="w"> </span>Use closed-form solution for small datasets; use gradient methods or regularized solvers otherwise.
+
+<span class="gu">## Model</span>
+
+Predict with weights $w$ and bias $b$:
+
+$y = w^{\top} x + b$
+
+The normal-equation (closed-form) solution is
+
+$$
+w = (X^{\top} X)^{-1} X^{\top} y
+$$
+
+where $X$ is the n×d design matrix (rows = examples).
+
+<span class="gu">## Loss</span>
+
+<span class="k">-</span><span class="w"> </span>Mean squared error (MSE):
+
+$$
+\mathrm{MSE} = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2
+$$
+
+<span class="gu">## Practical tips</span>
+
+<span class="k">-</span><span class="w"> </span>Regularization: Ridge adds $\\lambda \\|w\\|<span class="ge">_2^2$, Lasso adds $\\lambda \\|w\\|_</span>1$.
+<span class="k">-</span><span class="w"> </span>Center and scale features for gradient-based solvers.
+<span class="k">-</span><span class="w"> </span>Check condition number of $X^{\top}X$; if ill-conditioned prefer regularization or SVD.
+
+<span class="gu">## Minimal Python example</span>
+
+<span class="sb">```python</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">]])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>  <span class="c1"># approx y = 2x + 1</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;coef=&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">,</span> <span class="s1">&#39;intercept=&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">intercept_</span><span class="p">)</span>
+<span class="sb">```</span>
+
+<span class="gu">## References</span>
+
+<span class="k">-</span><span class="w"> </span>Ordinary Least Squares, linear algebra textbooks.
+<span class="k">-</span><span class="w"> </span>scikit-learn <span class="sb">`LinearRegression`</span> and <span class="sb">`Ridge`</span>, <span class="sb">`Lasso`</span> implementations.
+
+<span class="gu">## Assumptions</span>
+
+Common assumptions for ordinary least squares (OLS) linear regression:
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Linearity:**</span> the conditional expectation is linear: $E[y\\mid x]=w^{\\top}x+b$.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Independence:**</span> observations are independent (no autocorrelation).
+<span class="k">-</span><span class="w"> </span><span class="gs">**Homoscedasticity:**</span> error variance is constant: $\\mathrm{Var}(\\varepsilon_i)=\\sigma^2$.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Zero mean errors / exogeneity:**</span> $E[\\varepsilon\\mid x]=0$ (no omitted-variable bias).
+<span class="k">-</span><span class="w"> </span><span class="gs">**No perfect multicollinearity:**</span> columns of $X$ are linearly independent so $X^{\\top}X$ is invertible.
+<span class="k">-</span><span class="w"> </span><span class="gs">**(Optional for inference) Normality of errors:**</span> $\\varepsilon\\sim N(0,\\sigma^2)$ simplifies confidence intervals and tests.
+
+Violations affect estimation or inference: heteroskedasticity breaks OLS efficiency (use robust SEs), autocorrelation requires time-series methods, and endogeneity requires instrumental variables.
+
+<span class="gu">## Special cases &amp; common remedies</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Positive-only targets ($y&gt;0$):**</span> if the response is strictly positive consider a log transform ($\\log y$) and model linearity in log-space, or use a GLM (Gamma family with log link) or Poisson/Quasi-Poisson for counts.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Count data / many zeros:**</span> use Poisson, negative binomial, or zero-inflated models instead of OLS.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Bounded outcomes (e.g., probabilities):**</span> use logistic regression or Beta regression rather than OLS.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Heteroskedasticity:**</span> use weighted least squares (WLS) or heteroskedasticity-robust standard errors (HC0–HC3).
+<span class="k">-</span><span class="w"> </span><span class="gs">**Multicollinearity / high-dimensional data (p &gt; n):**</span> use Ridge, Lasso, or dimensionality reduction (PCA); drop or combine correlated features.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Outliers / heavy tails:**</span> use robust regression (Huber, RANSAC) or transform the outcome.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Singular/ill-conditioned $X^{\\top}X$:**</span> use regularization or compute a pseudo-inverse via SVD.
+
+Keep explanations short and add examples or Jupyter notebooks when you want runnable demonstrations.
+</code></pre></div>
 <h1 id="linear-regression">Linear Regression</h1>
 <p>Concise study notes on ordinary least squares linear regression.</p>
 <h2 id="at-a-glance">At a glance</h2>
